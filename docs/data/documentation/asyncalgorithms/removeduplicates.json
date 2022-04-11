@@ -1,0 +1,1208 @@
+{
+  "abstract" : [
+    {
+      "text" : "No overview available.",
+      "type" : "text"
+    }
+  ],
+  "hierarchy" : {
+    "paths" : [
+      [
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms"
+      ]
+    ]
+  },
+  "identifier" : {
+    "interfaceLanguage" : "swift",
+    "url" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/RemoveDuplicates"
+  },
+  "kind" : "article",
+  "metadata" : {
+    "modules" : [
+      {
+        "name" : "AsyncAlgorithms"
+      }
+    ],
+    "role" : "article",
+    "roleHeading" : "Article",
+    "title" : "RemoveDuplicates"
+  },
+  "primaryContentSections" : [
+    {
+      "content" : [
+        {
+          "anchor" : "overview",
+          "level" : 2,
+          "text" : "Overview",
+          "type" : "heading"
+        },
+        {
+          "items" : [
+            {
+              "content" : [
+                {
+                  "inlineContent" : [
+                    {
+                      "text" : "Author(s): ",
+                      "type" : "text"
+                    },
+                    {
+                      "identifier" : "https:\/\/github.com\/kperryua",
+                      "isActive" : true,
+                      "type" : "reference"
+                    }
+                  ],
+                  "type" : "paragraph"
+                }
+              ]
+            }
+          ],
+          "type" : "unorderedList"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "[",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncRemoveDuplicatesSequence.swift",
+              "isActive" : true,
+              "type" : "reference"
+            },
+            {
+              "text" : " |",
+              "type" : "text"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestRemoveDuplicates.swift",
+              "isActive" : true,
+              "type" : "reference"
+            },
+            {
+              "text" : " ",
+              "type" : "text"
+            },
+            {
+              "text" : "]",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "anchor" : "Introduction",
+          "level" : 2,
+          "text" : "Introduction",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "When processing values over time it is definitely possible that the same value may occur in a row. When the distinctness of the presence value is not needed it is useful to consider the values over time that are differing from the last. Particularly this can be expressed as removing duplicate values either in the case as they are directly ",
+              "type" : "text"
+            },
+            {
+              "code" : "Equatable",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " or by a predicate.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "anchor" : "Proposed-Solution",
+          "level" : 2,
+          "text" : "Proposed Solution",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "The ",
+              "type" : "text"
+            },
+            {
+              "code" : "removeDuplicates()",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " and ",
+              "type" : "text"
+            },
+            {
+              "code" : "removeDuplicates(by:)",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " APIs serve this purpose of removing duplicate values that occur. These algorithms test against the previous value and if the latest iteration of the base ",
+              "type" : "text"
+            },
+            {
+              "code" : "AsyncSequence",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " is the same as the last it invokes ",
+              "type" : "text"
+            },
+            {
+              "code" : "next()",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " again. The resulting ",
+              "type" : "text"
+            },
+            {
+              "code" : "AsyncRemoveDuplicatesSequence",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " will ensure that no duplicate values occur next to each other. This should not be confused with only emitting unique new values; where each value is tested against a collected set of values.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "extension AsyncSequence where Element: Equatable {",
+            "  public func removeDuplicates() -> AsyncRemoveDuplicatesSequence<Self>",
+            "}",
+            "",
+            "extension AsyncSequence {",
+            "  public func removeDuplicates(",
+            "    by predicate: @escaping @Sendable (Element, Element) async -> Bool",
+            "  ) -> AsyncRemoveDuplicatesSequence<Self>",
+            "  ",
+            "  public func removeDuplicates(",
+            "    by predicate: @escaping @Sendable (Element, Element) async throws -> Bool",
+            "  ) -> AsyncThrowingRemoveDuplicatesSequence<Self>",
+            "}"
+          ],
+          "syntax" : "swift",
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "The ",
+              "type" : "text"
+            },
+            {
+              "code" : "removeDuplicates",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " family comes in three variants. One variant is conditional upon the ",
+              "type" : "text"
+            },
+            {
+              "code" : "Element",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " type being ",
+              "type" : "text"
+            },
+            {
+              "code" : "Equatable",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ". This variation is a shorthand for writing ",
+              "type" : "text"
+            },
+            {
+              "code" : ".removeDuplicates { $0 == $1 }",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ". The next variation is the closure version that allows for custom predicates to be applied. This algorithm allows for the cases where the elements themselves may not be equatable but portions of the element may be compared. Lastly is the variation that allows for comparison when the comparison method may throw.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "anchor" : "Detailed-Design",
+          "level" : 2,
+          "text" : "Detailed Design",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "In the cases where the ",
+              "type" : "text"
+            },
+            {
+              "code" : "Element",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " type is ",
+              "type" : "text"
+            },
+            {
+              "code" : "Equatable",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " or the non-trowing predicate variant these utilize the type ",
+              "type" : "text"
+            },
+            {
+              "code" : "AsyncRemoveDuplicatesSequence",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ". The throwing predicate variant uses ",
+              "type" : "text"
+            },
+            {
+              "code" : "AsyncThrowingRemoveDuplicatesSequence",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ". Both of these types are conditionally ",
+              "type" : "text"
+            },
+            {
+              "code" : "Sendable",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " when the base, base element, and base iterator are ",
+              "type" : "text"
+            },
+            {
+              "code" : "Sendable",
+              "type" : "codeVoice"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "The ",
+              "type" : "text"
+            },
+            {
+              "code" : "AsyncRemoveDuplicatesSequence",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " will rethrow if the base asynchronous sequence throws and will not throw if the base asynchronous sequence does not throw.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "public struct AsyncRemoveDuplicatesSequence<Base: AsyncSequence>: AsyncSequence {",
+            "  public typealias Element = Base.Element",
+            "",
+            "  public struct Iterator: AsyncIteratorProtocol {",
+            "    public mutating func next() async rethrows -> Element?",
+            "  }",
+            "",
+            "  public func makeAsyncIterator() -> Iterator {",
+            "    Iterator(iterator: base.makeAsyncIterator(), predicate: predicate)",
+            "  }",
+            "}",
+            "",
+            "extension AsyncRemoveDuplicatesSequence: Sendable ",
+            "  where Base: Sendable, Base.Element: Sendable, Base.AsyncIterator: Sendable { }",
+            "  ",
+            "extension AsyncRemoveDuplicatesSequence.Iterator: Sendable ",
+            "  where Base: Sendable, Base.Element: Sendable, Base.AsyncIterator: Sendable { }",
+            ""
+          ],
+          "syntax" : "swift",
+          "type" : "codeListing"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "The ",
+              "type" : "text"
+            },
+            {
+              "code" : "AsyncThrowingRemoveDuplicatesSequence",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " will rethrow if the base asynchronous sequence throws and still may throw if the base asynchronous sequence does not throw due to the predicate having the potential of throwing.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "code" : [
+            "",
+            "public struct AsyncThrowingRemoveDuplicatesSequence<Base: AsyncSequence>: AsyncSequence {",
+            "  public typealias Element = Base.Element",
+            "  ",
+            "  public struct Iterator: AsyncIteratorProtocol {",
+            "    public mutating func next() async throws -> Element?",
+            "  }",
+            "  ",
+            "  public func makeAsyncIterator() -> Iterator",
+            "}",
+            "",
+            "extension AsyncThrowingRemoveDuplicatesSequence: Sendable ",
+            "  where Base: Sendable, Base.Element: Sendable, Base.AsyncIterator: Sendable { }",
+            "  ",
+            "extension AsyncThrowingRemoveDuplicatesSequence.Iterator: Sendable ",
+            "  where Base: Sendable, Base.Element: Sendable, Base.AsyncIterator: Sendable { }",
+            ""
+          ],
+          "syntax" : "swift",
+          "type" : "codeListing"
+        },
+        {
+          "anchor" : "Alternatives-Considered",
+          "level" : 2,
+          "text" : "Alternatives Considered",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "An alternative algorithm for uniqueness was considered but was discounted since it does not directly belong to this particular family of methods.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "The name of this method could be considered to belong to the ",
+              "type" : "text"
+            },
+            {
+              "code" : "filter",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " family and could refer directly to the repetitions. There is distinct merit to considering the name to be ",
+              "type" : "text"
+            },
+            {
+              "code" : "filterRepetitions",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " or ",
+              "type" : "text"
+            },
+            {
+              "code" : "removeRepetitions",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : ". Likewise the terminology of ",
+              "type" : "text"
+            },
+            {
+              "code" : "drop",
+              "type" : "codeVoice"
+            },
+            {
+              "text" : " also has merit.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        },
+        {
+          "anchor" : "Credits\/Inspiration",
+          "level" : 2,
+          "text" : "Credits\/Inspiration",
+          "type" : "heading"
+        },
+        {
+          "inlineContent" : [
+            {
+              "text" : "The Combine framework has a ",
+              "type" : "text"
+            },
+            {
+              "identifier" : "https:\/\/developer.apple.com\/documentation\/combine\/publisher\/removeduplicates()\/",
+              "isActive" : true,
+              "type" : "reference"
+            },
+            {
+              "text" : " that performs a similar task.",
+              "type" : "text"
+            }
+          ],
+          "type" : "paragraph"
+        }
+      ],
+      "kind" : "content"
+    }
+  ],
+  "schemaVersion" : {
+    "major" : 0,
+    "minor" : 2,
+    "patch" : 0
+  },
+  "sections" : [
+
+  ],
+  "seeAlsoSections" : [
+    {
+      "generated" : true,
+      "identifiers" : [
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/AdjacentPairs",
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/BufferedBytes",
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Chain",
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Channel",
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Chunked",
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Collections",
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/CombineLatest",
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Compacted",
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Debounce",
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Intersperse",
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Joined",
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Lazy",
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Merge",
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Reductions",
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Select",
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Throttle",
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Timer",
+        "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Zip"
+      ],
+      "title" : "Getting Started"
+    }
+  ],
+  "variants" : [
+    {
+      "paths" : [
+        "\/documentation\/asyncalgorithms\/removeduplicates"
+      ],
+      "traits" : [
+        {
+          "interfaceLanguage" : "swift"
+        }
+      ]
+    }
+  ]
+, 
+"references": {
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms": {
+  "abstract" : [
+    {
+      "inlineContent" : [
+        {
+          "text" : "Swift Async Algorithms",
+          "type" : "text"
+        }
+      ],
+      "type" : "strong"
+    },
+    {
+      "text" : " is an open-source package of asynchronous sequence and advanced algorithms that involve concurrency, along with their related types.",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms",
+  "kind" : "symbol",
+  "role" : "collection",
+  "title" : "AsyncAlgorithms",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/AdjacentPairs": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/AdjacentPairs",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "AdjacentPairs",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/adjacentpairs"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/BufferedBytes": {
+  "abstract" : [
+    {
+      "text" : "[",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncBufferedByteIterator.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : " |",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestBufferedByteIterator.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : "]",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/BufferedBytes",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "AsyncBufferedByteIterator",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/bufferedbytes"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/Chain": {
+  "abstract" : [
+    {
+      "text" : "[",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncChain2Sequence.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : ", ",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncChain3Sequence.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : " |",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestChain.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : "]",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Chain",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Chain",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/chain"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/Channel": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Channel",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Channel",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/channel"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/Chunked": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Chunked",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Chunked",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/chunked"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/Collections": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Collections",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Collection Initializers",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/collections"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/CombineLatest": {
+  "abstract" : [
+    {
+      "text" : "[",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncCombineLatest2Sequence.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : ", ",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncCombineLatest3Sequence.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : " |",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestCombineLatest.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : "]",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/CombineLatest",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Combine Latest",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/combinelatest"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/Compacted": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Compacted",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Compacted",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/compacted"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/Debounce": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Debounce",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Debounce",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/debounce"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/Intersperse": {
+  "abstract" : [
+    {
+      "text" : "[",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncInterspersedSequence.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : " |",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestInterspersed.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : "]",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Intersperse",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Intersperse",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/intersperse"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/Joined": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Joined",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Joined",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/joined"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/Lazy": {
+  "abstract" : [
+    {
+      "text" : "[",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncLazySequence.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : " |",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestLazy.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : "]",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Lazy",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "AsyncLazySequence",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/lazy"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/Merge": {
+  "abstract" : [
+    {
+      "text" : "[",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/Asyncmerge2Sequence.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : ", ",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncMerge3Sequence.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : " |",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestMerge.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : "]",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Merge",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Merge",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/merge"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/Reductions": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Reductions",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Reductions",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/reductions"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/Select": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Select",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Task.select",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/select"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/Throttle": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Throttle",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Throttle",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/throttle"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/Timer": {
+  "abstract" : [
+
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Timer",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Timer",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/timer"
+},
+"doc://AsyncAlgorithms/documentation/AsyncAlgorithms/Zip": {
+  "abstract" : [
+    {
+      "text" : "[",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncZip2Sequence.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : ", ",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncZip3Sequence.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : " |",
+      "type" : "text"
+    },
+    {
+      "text" : " ",
+      "type" : "text"
+    },
+    {
+      "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestZip.swift",
+      "isActive" : true,
+      "type" : "reference"
+    },
+    {
+      "text" : "]",
+      "type" : "text"
+    }
+  ],
+  "identifier" : "doc:\/\/AsyncAlgorithms\/documentation\/AsyncAlgorithms\/Zip",
+  "kind" : "article",
+  "role" : "article",
+  "title" : "Zip",
+  "type" : "topic",
+  "url" : "\/documentation\/asyncalgorithms\/zip"
+},
+"https://developer.apple.com/documentation/combine/publisher/removeduplicates()/": {
+  "identifier" : "https:\/\/developer.apple.com\/documentation\/combine\/publisher\/removeduplicates()\/",
+  "title" : "function for publishers",
+  "titleInlineContent" : [
+    {
+      "text" : "function for publishers",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/developer.apple.com\/documentation\/combine\/publisher\/removeduplicates()\/"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Sources/AsyncAlgorithms/AsyncBufferedByteIterator.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncBufferedByteIterator.swift",
+  "title" : "Source",
+  "titleInlineContent" : [
+    {
+      "text" : "Source",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncBufferedByteIterator.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Sources/AsyncAlgorithms/AsyncChain2Sequence.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncChain2Sequence.swift",
+  "title" : "Source",
+  "titleInlineContent" : [
+    {
+      "text" : "Source",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncChain2Sequence.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Sources/AsyncAlgorithms/AsyncChain3Sequence.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncChain3Sequence.swift",
+  "title" : "Source",
+  "titleInlineContent" : [
+    {
+      "text" : "Source",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncChain3Sequence.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Sources/AsyncAlgorithms/AsyncCombineLatest2Sequence.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncCombineLatest2Sequence.swift",
+  "title" : "Source",
+  "titleInlineContent" : [
+    {
+      "text" : "Source",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncCombineLatest2Sequence.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Sources/AsyncAlgorithms/AsyncCombineLatest3Sequence.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncCombineLatest3Sequence.swift",
+  "title" : "Source",
+  "titleInlineContent" : [
+    {
+      "text" : "Source",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncCombineLatest3Sequence.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Sources/AsyncAlgorithms/AsyncInterspersedSequence.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncInterspersedSequence.swift",
+  "title" : "Source",
+  "titleInlineContent" : [
+    {
+      "text" : "Source",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncInterspersedSequence.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Sources/AsyncAlgorithms/AsyncLazySequence.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncLazySequence.swift",
+  "title" : "Source",
+  "titleInlineContent" : [
+    {
+      "text" : "Source",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncLazySequence.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Sources/AsyncAlgorithms/AsyncMerge3Sequence.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncMerge3Sequence.swift",
+  "title" : "Source",
+  "titleInlineContent" : [
+    {
+      "text" : "Source",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncMerge3Sequence.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Sources/AsyncAlgorithms/AsyncRemoveDuplicatesSequence.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncRemoveDuplicatesSequence.swift",
+  "title" : "Source",
+  "titleInlineContent" : [
+    {
+      "text" : "Source",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncRemoveDuplicatesSequence.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Sources/AsyncAlgorithms/AsyncZip2Sequence.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncZip2Sequence.swift",
+  "title" : "Source",
+  "titleInlineContent" : [
+    {
+      "text" : "Source",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncZip2Sequence.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Sources/AsyncAlgorithms/AsyncZip3Sequence.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncZip3Sequence.swift",
+  "title" : "Source",
+  "titleInlineContent" : [
+    {
+      "text" : "Source",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/AsyncZip3Sequence.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Sources/AsyncAlgorithms/Asyncmerge2Sequence.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/Asyncmerge2Sequence.swift",
+  "title" : "Source",
+  "titleInlineContent" : [
+    {
+      "text" : "Source",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Sources\/AsyncAlgorithms\/Asyncmerge2Sequence.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Tests/AsyncAlgorithmsTests/TestBufferedByteIterator.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestBufferedByteIterator.swift",
+  "title" : "Tests",
+  "titleInlineContent" : [
+    {
+      "text" : "Tests",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestBufferedByteIterator.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Tests/AsyncAlgorithmsTests/TestChain.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestChain.swift",
+  "title" : "Tests",
+  "titleInlineContent" : [
+    {
+      "text" : "Tests",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestChain.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Tests/AsyncAlgorithmsTests/TestCombineLatest.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestCombineLatest.swift",
+  "title" : "Tests",
+  "titleInlineContent" : [
+    {
+      "text" : "Tests",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestCombineLatest.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Tests/AsyncAlgorithmsTests/TestInterspersed.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestInterspersed.swift",
+  "title" : "Tests",
+  "titleInlineContent" : [
+    {
+      "text" : "Tests",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestInterspersed.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Tests/AsyncAlgorithmsTests/TestLazy.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestLazy.swift",
+  "title" : "Tests",
+  "titleInlineContent" : [
+    {
+      "text" : "Tests",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestLazy.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Tests/AsyncAlgorithmsTests/TestMerge.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestMerge.swift",
+  "title" : "Tests",
+  "titleInlineContent" : [
+    {
+      "text" : "Tests",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestMerge.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Tests/AsyncAlgorithmsTests/TestRemoveDuplicates.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestRemoveDuplicates.swift",
+  "title" : "Tests",
+  "titleInlineContent" : [
+    {
+      "text" : "Tests",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestRemoveDuplicates.swift"
+},
+"https://github.com/apple/swift-async-algorithms/blob/main/Tests/AsyncAlgorithmsTests/TestZip.swift": {
+  "identifier" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestZip.swift",
+  "title" : "Tests",
+  "titleInlineContent" : [
+    {
+      "text" : "Tests",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/apple\/swift-async-algorithms\/blob\/main\/Tests\/AsyncAlgorithmsTests\/TestZip.swift"
+},
+"https://github.com/kperryua": {
+  "identifier" : "https:\/\/github.com\/kperryua",
+  "title" : "Kevin Perry",
+  "titleInlineContent" : [
+    {
+      "text" : "Kevin Perry",
+      "type" : "text"
+    }
+  ],
+  "type" : "link",
+  "url" : "https:\/\/github.com\/kperryua"
+}
+}
+}
