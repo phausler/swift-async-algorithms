@@ -1,4 +1,4 @@
-extension Pipeline {
+extension Pipeline where Self: ~Copyable {
   public consuming func map<Transformed: ~Copyable>(
     _ transform: nonisolated(nonsending) @escaping @Sendable (consuming Element) async throws(Failure) -> Transformed
   ) -> some Pipeline<Transformed, Failure> & ~Copyable {
@@ -6,18 +6,20 @@ extension Pipeline {
   }
 }
 
-fileprivate struct Map<Base: Pipeline, Transformed: ~Copyable>: ~Copyable, Pipeline {
-  typealias Element = Transformed
-  typealias Failure = Base.Failure
-
+fileprivate struct Map<Base: Pipeline & ~Copyable, Transformed: ~Copyable>: ~Copyable {
   var base: Base
 
   var transform: (nonisolated(nonsending) @Sendable (consuming Base.Element) async throws(Base.Failure) -> Transformed)?
 
-  init(_ base: Base, transform: nonisolated(nonsending) @escaping @Sendable (consuming Base.Element) async throws(Base.Failure) -> Transformed) {
+  init(_ base: consuming Base, transform: nonisolated(nonsending) @escaping @Sendable (consuming Base.Element) async throws(Base.Failure) -> Transformed) {
     self.base = base
     self.transform = transform
   }
+}
+
+extension Map: Pipeline where Base: ~Copyable, Transformed: ~Copyable {
+  typealias Element = Transformed
+  typealias Failure = Base.Failure
 
   mutating func request(isolation: isolated (any Actor)?) async throws(Failure) -> Element? {
     guard let transform else {

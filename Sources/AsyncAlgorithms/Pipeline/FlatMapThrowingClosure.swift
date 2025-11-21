@@ -1,7 +1,7 @@
-extension Pipeline where Self: ~Copyable {
-  public consuming func flatMap<SegmentOfResult: Pipeline & ~Copyable>(
-    _ transform: nonisolated(nonsending) @escaping @Sendable (consuming Element) async throws(Failure) -> SegmentOfResult
-  ) -> some Pipeline<SegmentOfResult.Element, Failure> & ~Copyable where SegmentOfResult.Failure == Failure {
+extension Pipeline where Self: ~Copyable, Failure == Never {
+  public consuming func flatMap<SegmentOfResult: Pipeline & ~Copyable, TransformedFailure: Error>(
+    _ transform: nonisolated(nonsending) @escaping @Sendable (consuming Element) async throws(TransformedFailure) -> SegmentOfResult
+  ) -> some Pipeline<SegmentOfResult.Element, TransformedFailure> & ~Copyable where SegmentOfResult.Failure == Never {
     return FlatMap(self, transform: transform)
   }
 }
@@ -55,12 +55,12 @@ Never  |  ✅  |       ❌        |    ✅   |
 -------------------------------------------
 */
 
-fileprivate struct FlatMap<Base: Pipeline & ~Copyable, SegmentOfResult: Pipeline & ~Copyable>: ~Copyable where SegmentOfResult.Failure == Base.Failure {
+fileprivate struct FlatMap<Base: Pipeline & ~Copyable, SegmentOfResult: Pipeline & ~Copyable, TransformedFailure: Error>: ~Copyable where SegmentOfResult.Failure == Base.Failure, Base.Failure == Never {
   var base: Base
   var current: SegmentOfResult?
-  var transform: (nonisolated(nonsending) @Sendable (consuming Base.Element) async throws(Failure) -> SegmentOfResult)?
+  var transform: (nonisolated(nonsending) @Sendable (consuming Base.Element) async throws(TransformedFailure) -> SegmentOfResult)?
 
-  init(_ base: consuming Base, transform: nonisolated(nonsending) @escaping @Sendable (consuming Base.Element) async throws(Failure) -> SegmentOfResult) {
+  init(_ base: consuming Base, transform: nonisolated(nonsending) @escaping @Sendable (consuming Base.Element) async throws(TransformedFailure) -> SegmentOfResult) {
     self.base = base
     self.transform = transform
   }
@@ -68,31 +68,26 @@ fileprivate struct FlatMap<Base: Pipeline & ~Copyable, SegmentOfResult: Pipeline
 
 extension FlatMap: Pipeline where Base: ~Copyable, SegmentOfResult: ~Copyable {
   typealias Element = SegmentOfResult.Element
-  typealias Failure = Base.Failure
+  typealias Failure = TransformedFailure
 
   mutating func request(isolation: isolated (any Actor)?) async throws(Failure) -> Element? {
     while let transform {
       if current != nil {
-        do {
-          let optElement = try await current!.request(isolation: isolation)
-          guard let element = optElement else {
-            current = nil
-            continue
-          }
-          return element
-        } catch {
-          self.transform = nil
-          throw error
+        let optElement = await current!.request(isolation: isolation)
+        guard let element = optElement else {
+          current = nil
+          continue
         }
+        return element
       } else {
         do {
-          let optItem = try await base.request(isolation: isolation)
+          let optItem = await base.request(isolation: isolation)
           guard let item = optItem else {
             self.transform = nil
             return nil
           }
           current = try await transform(item)
-          let optElement = try await current!.request(isolation: isolation)  
+          let optElement = await current!.request(isolation: isolation)  
           guard let element = optElement else {
             current = nil
             continue

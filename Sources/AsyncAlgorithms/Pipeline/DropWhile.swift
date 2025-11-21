@@ -1,4 +1,4 @@
-extension Pipeline {
+extension Pipeline where Self: ~Copyable {
   public consuming func dropWhile(
     _ predicate: nonisolated(nonsending) @escaping @Sendable (borrowing Element) async throws(Failure) -> Bool
   ) -> some Pipeline<Element, Failure> & ~Copyable {
@@ -6,18 +6,18 @@ extension Pipeline {
   }
 }
 
-fileprivate struct DropWhile<Base: Pipeline>: ~Copyable {
+fileprivate struct DropWhile<Base: Pipeline & ~Copyable>: ~Copyable {
   var base: Base
   var predicate: (nonisolated(nonsending) @Sendable (borrowing Element) async throws(Failure) -> Bool)?
   var finished = false
 
-  init(_ base: Base, predicate: nonisolated(nonsending) @escaping @Sendable (borrowing Element) async throws(Failure) -> Bool) {
+  init(_ base: consuming Base, predicate: nonisolated(nonsending) @escaping @Sendable (borrowing Element) async throws(Failure) -> Bool) {
     self.base = base
     self.predicate = predicate
   }
 }
 
-extension DropWhile: Pipeline {
+extension DropWhile: Pipeline where Base: ~Copyable {
   typealias Element = Base.Element
   typealias Failure = Base.Failure
 

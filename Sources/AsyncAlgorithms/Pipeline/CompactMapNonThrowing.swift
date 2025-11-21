@@ -1,4 +1,4 @@
-extension Pipeline {
+extension Pipeline where Self: ~Copyable {
   public consuming func compactMap<ElementOfResult: ~Copyable>(
     _ transform: nonisolated(nonsending) @escaping @Sendable (consuming Element) async -> ElementOfResult?
   ) -> some Pipeline<ElementOfResult, Failure> & ~Copyable {
@@ -6,14 +6,14 @@ extension Pipeline {
   }
 }
 
-fileprivate struct CompactMap<Base: Pipeline, ElementOfResult: ~Copyable>: ~Copyable, Pipeline {
+fileprivate struct CompactMap<Base: Pipeline & ~Copyable, ElementOfResult: ~Copyable>: ~Copyable, Pipeline {
   typealias Element = ElementOfResult
   typealias Failure = Base.Failure
 
   var base: Base
   var transform: (nonisolated(nonsending) @Sendable (consuming Base.Element) async -> ElementOfResult?)?
 
-  init(_ base: Base, transform: nonisolated(nonsending) @escaping @Sendable (consuming Base.Element) async -> ElementOfResult?) {
+  init(_ base: consuming Base, transform: nonisolated(nonsending) @escaping @Sendable (consuming Base.Element) async -> ElementOfResult?) {
     self.base = base
     self.transform = transform
   }

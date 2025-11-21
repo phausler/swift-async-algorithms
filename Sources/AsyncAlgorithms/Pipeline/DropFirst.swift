@@ -1,4 +1,4 @@
-extension Pipeline {
+extension Pipeline where Self: ~Copyable {
   public consuming func dropFirst(
     _ count: Int = 1
   ) -> some Pipeline<Element, Failure> & ~Copyable {
@@ -6,14 +6,14 @@ extension Pipeline {
   }
 }
 
-fileprivate struct DropFirst<Base: Pipeline>: ~Copyable, Pipeline {
+fileprivate struct DropFirst<Base: Pipeline & ~Copyable>: ~Copyable, Pipeline {
   typealias Element = Base.Element
   typealias Failure = Base.Failure
 
   var base: Base
   var count: Int
 
-  init(_ base: Base, count: Int) {
+  init(_ base: consuming Base, count: Int) {
     self.base = base
     self.count = count
   }
