@@ -1,0 +1,40 @@
+extension Pipeline {
+  public consuming func filter(_ included: nonisolated(nonsending) @escaping @Sendable (borrowing Element) async throws(Failure) -> Bool) -> some Pipeline<Element, Failure> & ~Copyable {
+    Filter(self, included: included)
+  }
+}
+
+fileprivate struct Filter<Base: Pipeline>: ~Copyable {
+  var base: Base
+  var included: (nonisolated(nonsending) @Sendable (borrowing Element) async throws(Failure) -> Bool)?
+
+  init(_ base: Base, included: nonisolated(nonsending) @escaping @Sendable (borrowing Element) async throws(Failure) -> Bool) {
+    self.base = base
+    self.included = included
+  }
+}
+
+extension Filter: Pipeline {
+  typealias Element = Base.Element
+  typealias Failure = Base.Failure
+
+  mutating func request(isolation: isolated (any Actor)?) async throws(Failure) -> Element? {
+    guard let included else {
+      return nil
+    }
+    while true {
+      do {
+        guard let element = try await base.request(isolation: isolation) else { 
+          self.included = nil
+          return nil 
+        }
+        if try await included(element) {
+          return element
+        }
+      } catch {
+        self.included = nil
+        throw error
+      }
+    }
+  }
+}

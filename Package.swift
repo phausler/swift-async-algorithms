@@ -33,7 +33,8 @@ let package = Package(
         .product(name: "DequeModule", package: "swift-collections"),
       ],
       swiftSettings: availabilityMacros + [
-        .enableExperimentalFeature("StrictConcurrency=complete")
+        .enableExperimentalFeature("StrictConcurrency=complete"),
+        .enableExperimentalFeature("SuppressedAssociatedTypes")
       ]
     ),
     .target(
